@@ -21,42 +21,60 @@ This lab evaluates low-level TCP frame mechanics during network reconnaissance. 
 
 ### 1. TCP SYN Stealth Scan (`-sS`)
 * **Command:** `sudo nmap -sS -p 22,81,443 -T2 192.168.56.103`
-* **Capture File:** `captures/nmap_syn_stealth.pcapng`
+* **Capture File:** [`captures/nmap_syn_stealth.pcapng`](./captures/nmap_syn_stealth.pcapng)
 * **Packet Dynamics:**
   * **Port 22 (Open):** Attacker sends `[SYN]` $\rightarrow$ Target replies `[SYN, ACK]` $\rightarrow$ Attacker immediately sends `[RST]` to tear down the socket before completing the handshake (Half-Open scan).
   * **Port 81 (Closed):** Attacker sends `[SYN]` $\rightarrow$ Target replies `[RST, ACK]` indicating no listening daemon.
   * **Port 443 (Filtered):** Attacker sends `[SYN]` $\rightarrow$ Firewall drops packet; Attacker retransmits `[SYN]` probes until socket timeout.
 
+![TCP SYN Stealth Scan Flag Analysis](./screenshots/syn_scan_detail.png)
+
+---
+
 ### 2. TCP Connect Scan (`-sT`)
 * **Command:** `nmap -sT -p 22,81,443 -T2 192.168.56.103`
-* **Capture File:** `captures/nmap_tcp_connect.pcapng`
+* **Capture File:** [`captures/nmap_tcp_connect.pcapng`](./captures/nmap_tcp_connect.pcapng)
 * **Packet Dynamics:**
   * **Port 22 (Open):** Completes a full OS-level 3-way handshake (`[SYN]` $\rightarrow$ `[SYN, ACK]` $\rightarrow$ `[ACK]`), followed immediately by an active connection closure (`[RST, ACK]` or `[FIN, ACK]`). Does not require root privileges.
   * **Port 81 (Closed):** Target returns `[RST, ACK]` on initial connection attempt.
   * **Port 443 (Filtered):** Retransmits `[SYN]` until reaching default system socket timeout.
 
+![TCP Connect Scan 3-Way Handshake](./screenshots/connect_scan_detail.png)
+
+---
+
 ### 3. TCP Xmas Scan (`-sX`)
 * **Command:** `sudo nmap -sX -p 22,81,443 -T2 192.168.56.103`
-* **Capture File:** `captures/nmap_xmas.pcapng`
+* **Capture File:** [`captures/nmap_xmas.pcapng`](./captures/nmap_xmas.pcapng)
 * **Packet Dynamics:**
   * **Port 22 (Open):** Attacker sends out-of-band flags (`[FIN, PSH, URG]`). Target adheres to RFC 793 by silently ignoring non-SYN probes on open ports (No response).
   * **Port 81 (Closed):** Target returns `[RST, ACK]`.
   * **Port 443 (Filtered):** Firewall drops incoming probe silently (No response; reported as `open|filtered`).
 
+![TCP Xmas Scan Out-of-Band Flags](./screenshots/xmas_scan_detail.png)
+
+---
+
 ### 4. TCP Null Scan (`-sN`)
 * **Command:** `sudo nmap -sN -p 22,81,443 -T2 192.168.56.103`
-* **Capture File:** `captures/nmap_null.pcapng`
+* **Capture File:** [`captures/nmap_null.pcapng`](./captures/nmap_null.pcapng)
 * **Packet Dynamics:**
   * **Port 22 (Open):** Attacker sends TCP frame with zero control flags set (`0x000`). Target silently drops packet per RFC 793 (No response).
   * **Port 81 (Closed):** Target returns `[RST, ACK]`.
   * **Port 443 (Filtered):** Packet dropped by target `iptables` rule (No response; reported as `open|filtered`).
 
+![TCP Null Scan Packet Analysis](./screenshots/null_scan_detail.png)
+
+---
+
 ### 5. TCP ACK Scan (`-sA`)
 * **Command:** `sudo nmap -sA -p 22,81,443 -T2 192.168.56.103`
-* **Capture File:** `captures/nmap_ack.pcapng`
+* **Capture File:** [`captures/nmap_ack.pcapng`](./captures/nmap_ack.pcapng)
 * **Packet Dynamics:**
   * **Port 22 & 81 (Unfiltered):** Attacker sends `[ACK]`. Target returns `[RST]` for both ports, confirming packets passed through firewall filters regardless of service state (`unfiltered`).
   * **Port 443 (Filtered):** Attacker sends `[ACK]`. Target firewall drops frame; no response received (`filtered`).
+
+![TCP ACK Scan Firewall Rule Detection](./screenshots/ack_scan_detail.png)
 
 ---
 
@@ -74,9 +92,3 @@ This lab evaluates low-level TCP frame mechanics during network reconnaissance. 
 | **Null (`-sN`)** | Closed (81) | None (`0x000`) | `RST, ACK` | `RST, ACK` |
 | **ACK (`-sA`)** | Unfiltered (22) | `ACK` | `RST` | `RST` (Passes Firewall) |
 | **ACK (`-sA`)** | Filtered (443) | `ACK` | No Response | No Response (Blocked by Firewall) |
-
----
-
-## Artifacts & Evidence
-* Packet capture logs: `captures/`
-* Packet flag screenshots: `screenshots/`
