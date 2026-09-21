@@ -6,8 +6,8 @@ This lab analyzes kernel-level packet filtering mechanics using Linux `iptables`
 ---
 
 ## Lab Architecture & Testbed
-* **Attacker System:** Debian Linux (`jugaadwned` / `192.168.56.102`)
-* **Target System:** Metasploitable 2 (`meta` / `192.168.56.103`)
+* **Attacker System:** Debian Linux (`192.168.56.102`)
+* **Target System:** Metasploitable 2 (`192.168.56.103`)
 * **Network Segment:** Isolated Host-Only Virtual Switch (`192.168.56.0/24`)
 * **Packet Capture Tool:** Wireshark v4.x
 * **Firewall Engine:** Linux Netfilter (`iptables`)
