@@ -6,7 +6,7 @@ This lab evaluates low-level TCP frame mechanics during network reconnaissance. 
 ---
 
 ## Lab Architecture & Testbed
-* **Attacker System:** Debian Linux (`jugaadwned`)
+* **Attacker System:** Debian Linux (`192.168.56.102`)
 * **Target System:** Metasploitable 2 (`192.168.56.103`)
 * **Network Segment:** Isolated Host-Only Adapter (`192.168.56.0/24`)
 * **Packet Capture Tool:** Wireshark v4.x
