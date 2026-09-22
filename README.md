@@ -1,4 +1,4 @@
-# Networking Portfolio
+# Networking
 
 A collection of hands-on technical labs documenting low-level packet mechanics, network reconnaissance, host-based firewall policies, cryptographic session security, and network attack analysis using Wireshark, Nmap, Netfilter (`iptables`), and Linux network security tools.
 
